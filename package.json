@@ -1,0 +1,41 @@
+{
+  "name": "osu!roomie",
+  "version": "1.0.0",
+  "description": "Tool to manage osu!rooms from the interweb",
+  "main": "index.coffee",
+  "repository": "https://github.com/Soinou/osu-roomie",
+  "scripts": {
+    "start": "coffee index.coffee"
+  },
+  "keywords": [
+    "osu!",
+    "room",
+    "manager"
+  ],
+  "author": "Abricot Soinou <abricot.soinou@gmail.com>",
+  "license": "MIT",
+  "devDependencies": {
+    "browserify": "^13.1.0",
+    "coffee-react": "^5.0.0",
+    "coffee-reactify": "^5.0.0",
+    "coffee-script": "^1.10.0",
+    "express": "^4.14.0",
+    "gulp": "github:gulpjs/gulp#347ed5a731fe4b479d72c35d38503680621c316a",
+    "gulp-clean-css": "^2.0.12",
+    "gulp-concat": "^2.6.0",
+    "gulp-if": "^2.0.1",
+    "gulp-sourcemaps": "^1.6.0",
+    "gulp-uglify": "^2.0.0",
+    "gulp-util": "^3.0.7",
+    "isomorphic-fetch": "^2.2.1",
+    "pug": "^2.0.0-beta5",
+    "react": "^15.3.0",
+    "react-bootstrap": "^0.30.2",
+    "react-dom": "^15.3.0",
+    "react-router": "^2.6.1",
+    "react-router-bootstrap": "^0.23.1",
+    "vinyl-buffer": "^1.0.0",
+    "vinyl-source-stream": "^1.1.0",
+    "watchify": "^3.7.0"
+  }
+}

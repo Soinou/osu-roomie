@@ -1,0 +1,25 @@
+{
+  "name": "osu-roomie",
+  "description": "",
+  "main": "",
+  "authors": [
+    "Abricot Soinou <abricot.soinou@gmail.com>"
+  ],
+  "license": "MIT",
+  "homepage": "",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "resources/vendor",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "bootswatch": "3.3.6+2",
+    "jquery": "2.2.4",
+    "font-awesome": "^4.6.3",
+    "moment": "^2.14.1"
+  }
+}
