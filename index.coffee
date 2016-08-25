@@ -12,7 +12,7 @@ app.use compression()
 app.use express.static "public"
 
 # Catch all
-# app.get "/*", (req, res) -> res.sendFile __dirname + "/public/index.html"
+app.get "*", (req, res) -> res.sendFile __dirname + "/public/index.html"
 
 # Port
 port = process.env.PORT || 5000
