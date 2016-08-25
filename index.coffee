@@ -8,7 +8,7 @@ app = express()
 app.use compression()
 
 # Static assets
-app.use "/static", express.static "public"
+app.use "/static", express.static __dirname + "/public"
 
 # Catch all
 app.get "/*", (req, res) -> res.sendFile __dirname + "/public/index.html"
