@@ -5,8 +5,6 @@ React = require "react"
 
 # Components
 App = require "./components/App"
-Index = require "./components/pages/Index"
-NotFound = require "./components/pages/NotFound"
 Room = require "./components/pages/Room"
 Rooms = require "./components/pages/Rooms"
 
