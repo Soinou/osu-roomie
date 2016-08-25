@@ -1,1 +1,1 @@
-web: npm run prod
+web: node node_modules/coffee-script/bin/coffee index.coffee
