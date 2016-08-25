@@ -4,10 +4,11 @@ React = require "react"
 {render} = require "react-dom"
 
 # Components
-App = require "./components/App.cjsx"
-Index = require "./components/pages/Index.cjsx"
-Room = require "./components/pages/Room.cjsx"
-Rooms = require "./components/pages/Rooms.cjsx"
+App = require "./components/App"
+Index = require "./components/pages/Index"
+NotFound = require "./components/pages/NotFound"
+Room = require "./components/pages/Room"
+Rooms = require "./components/pages/Rooms"
 
 # Root
 Root = React.createClass
@@ -15,9 +16,8 @@ Root = React.createClass
     render: ->
         <Router history={browserHistory}>
             <Route path="/" component={App}>
-                <IndexRoute component={Index} />
-                <Route path="/rooms" component={Rooms} />
-                <Route path="/rooms/:id" component={Room} />
+                <IndexRoute component={Rooms} />
+                <Route path="/:id" component={Room} />
             </Route>
         </Router>
 

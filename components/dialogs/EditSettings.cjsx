@@ -15,6 +15,9 @@ module.exports = React.createClass
     getValidationState: ->
         if @state.apiKey isnt "" then "success"
 
+    componentWillMount: ->
+        @setState apiKey: Settings.getApiKey()
+
     # Render the dialog
     render: ->
         <Modal show={@props.show} onHide={@props.onHide}>

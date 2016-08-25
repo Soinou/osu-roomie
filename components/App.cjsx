@@ -19,11 +19,6 @@ module.exports = React.createClass
                     <Navbar.Toggle />
                 </Navbar.Header>
                 <Navbar.Collapse>
-                    <Nav>
-                        <LinkContainer to="/rooms">
-                            <NavItem>Rooms</NavItem>
-                        </LinkContainer>
-                    </Nav>
                     <Nav pullRight>
                         <NavItem onClick={@showSettings}>Settings</NavItem>
                     </Nav>

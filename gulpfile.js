@@ -34,6 +34,9 @@ var Bower = {
         "bower_components/font-awesome/fonts/fontawesome-webfont.woff",
         "bower_components/font-awesome/fonts/fontawesome-webfont.woff2",
         "bower_components/font-awesome/fonts/FontAwesome.otf"
+    ],
+    map: [
+        "bower_components/bootstrap/dist/css/bootstrap.css.map"
     ]
 }
 
@@ -99,7 +102,7 @@ function js()
 {
     return gulp.src(Bower.js)
         .pipe(concat("lib.js"))
-        .pipe(gulpif(gutil.env.production, clean({compatibility: "ie8", processImports: false})))
+        .pipe(gulpif(gutil.env.production, uglify()))
         .pipe(gulp.dest("public/js"));
 }
 
@@ -108,7 +111,7 @@ function css()
 {
     return gulp.src(Bower.css)
         .pipe(concat("lib.css"))
-        .pipe(gulpif(gutil.env.production, uglify()))
+        .pipe(gulpif(gutil.env.production, clean({compatibility: "ie8", processImports: false})))
         .pipe(gulp.dest("public/css"));
 }
 
@@ -119,13 +122,21 @@ function fonts()
         .pipe(gulp.dest("public/fonts"));
 }
 
+// Third party map files (Bootstrap pls)
+function map()
+{
+    return gulp.src(Bower.map)
+        .pipe(gulp.dest("public/css"));
+}
+
 // Tasks
 gulp.task("client", client(false));
 gulp.task("clientWatch", client(true));
 gulp.task("js", js);
 gulp.task("css", css);
 gulp.task("fonts", fonts);
+gulp.task("map", map);
 
 // Combined tasks
-gulp.task("default", ["client", "libs", "styles", "fonts"]);
-gulp.task("watch", ["clientWatch", "js", "css", "fonts"])
+gulp.task("default", ["client", "js", "css", "fonts", "map"]);
+gulp.task("watch", ["clientWatch", "js", "css", "fonts", "map"])

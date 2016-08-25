@@ -29,7 +29,7 @@ module.exports = React.createClass
             </td>
             <td>{room.data.match.name}</td>
             <td>
-                <Link to={"/rooms/" + room.id}>Show</Link>
+                <Link to={"/" + room.id}>Show</Link>
                 &nbsp;
                 <a href="#" onClick={@handleOnDelete room.id}>Delete</a>
             </td>

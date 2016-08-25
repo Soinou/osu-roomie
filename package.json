@@ -5,7 +5,11 @@
   "main": "index.coffee",
   "repository": "https://github.com/Soinou/osu-roomie",
   "scripts": {
-    "start": "coffee index.coffee"
+    "start": "node node_modules/coffee-script/bin/coffee index.coffee",
+    "prod": "npm run bundle && npm run pug && npm start",
+    "dev": "node node_modules/gulp/bin/gulp watch",
+    "bundle": "node node_modules/gulp/bin/gulp --production",
+    "pug": "node node_modules/pug-cli/index views/index.pug -o public"
   },
   "keywords": [
     "osu!",
@@ -14,7 +18,7 @@
   ],
   "author": "Abricot Soinou <abricot.soinou@gmail.com>",
   "license": "MIT",
-  "devDependencies": {
+  "dependencies": {
     "browserify": "^13.1.0",
     "coffee-react": "^5.0.0",
     "coffee-reactify": "^5.0.0",
@@ -29,6 +33,7 @@
     "gulp-util": "^3.0.7",
     "isomorphic-fetch": "^2.2.1",
     "pug": "^2.0.0-beta5",
+    "pug-cli": "^1.0.0-alpha6",
     "react": "^15.3.0",
     "react-bootstrap": "^0.30.2",
     "react-dom": "^15.3.0",

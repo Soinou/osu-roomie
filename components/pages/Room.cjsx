@@ -14,6 +14,8 @@ module.exports = React.createClass
         points: null
 
     update: (room) ->
+        if not room? then return
+
         points = Computer.compute room
         promises = []
 
@@ -93,7 +95,7 @@ module.exports = React.createClass
                 bottom: "5px"
 
             <div>
-                <LinkContainer to="/rooms" style={buttonStyle}>
+                <LinkContainer to="/" style={buttonStyle}>
                     <Button bsStyle="primary">Back</Button>
                 </LinkContainer>
                 <div className="panel panel-primary">
