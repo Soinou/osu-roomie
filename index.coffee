@@ -1,5 +1,6 @@
-express = require "express"
 compression = require "compression"
+express = require "express"
+path = require "path"
 
 # Create app
 app = express()
@@ -8,7 +9,7 @@ app = express()
 app.use compression()
 
 # Static assets
-app.use "/static", express.static __dirname + "/public"
+app.use "/static", express.static path.join(process.env.PWD, "/public")
 
 # Catch all
 app.get "/*", (req, res) -> res.sendFile __dirname + "/public/index.html"
