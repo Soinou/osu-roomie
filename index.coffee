@@ -8,6 +8,10 @@ app = express()
 # Middleware
 app.use compression()
 
+console.log "Dirname", __dirname
+console.log "CWD", process.cwd()
+console.log "PWD", process.env.PWD
+
 # Static assets
 app.use "/static", express.static path.join(process.env.PWD, "/public")
 
