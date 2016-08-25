@@ -5,10 +5,10 @@
   "main": "index.coffee",
   "repository": "https://github.com/Soinou/osu-roomie",
   "scripts": {
+    "postinstall": "node node_modules/bower/bin/bower install",
     "start": "node node_modules/coffee-script/bin/coffee index.coffee",
-    "prod": "npm run bower && npm run bundle && npm run pug && npm start",
+    "prod": "npm run bundle && npm run pug && npm start",
     "dev": "node node_modules/gulp/bin/gulp watch",
-    "bower": "node node_modules/bower/bin/bower install",
     "bundle": "node node_modules/gulp/bin/gulp --production",
     "pug": "node node_modules/pug-cli/index views/index.pug -o public"
   },
