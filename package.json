@@ -23,6 +23,7 @@
     "coffee-react": "^5.0.0",
     "coffee-reactify": "^5.0.0",
     "coffee-script": "^1.10.0",
+    "compression": "^1.6.2",
     "express": "^4.14.0",
     "gulp": "github:gulpjs/gulp#347ed5a731fe4b479d72c35d38503680621c316a",
     "gulp-clean-css": "^2.0.12",
