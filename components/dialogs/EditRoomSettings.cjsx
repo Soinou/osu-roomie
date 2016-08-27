@@ -28,12 +28,12 @@ module.exports = React.createClass
 
             for id, rank of @state.pointsTable
                 points.push <FormGroup key={count} validationState={@getValidationState(id)}>
-                    <ControlLabel>Rank #{id}</ControlLabel>
+                    <ControlLabel>Rank #{id + 1}</ControlLabel>
                     <InputGroup>
                         <FormControl
                             type="text"
                             value={rank}
-                            placeholder={"Rank #" + id}
+                            placeholder={"Rank #" + (id + 1)}
                             onChange={@handleChange(id)}
                         />
                         <InputGroup.Button>
