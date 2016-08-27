@@ -22,11 +22,10 @@ module.exports = React.createClass
     render: ->
         <Modal show={@props.show} onHide={@props.onHide}>
             <Modal.Header closeButton>
-                <Modal.Title>Settings</Modal.Title>
+                <Modal.Title>Edit settings</Modal.Title>
             </Modal.Header>
             <form onSubmit={@handleSubmit}>
                 <Modal.Body>
-                    <h3>Edit settings</h3>
                     <FormGroup validationState={@getValidationState()}>
                         <ControlLabel>osu!api key</ControlLabel>
                         <FormControl
