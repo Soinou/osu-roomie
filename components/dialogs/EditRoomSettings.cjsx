@@ -26,18 +26,21 @@ module.exports = React.createClass
             points = []
             count = 0
 
-            for id, rank of @state.pointsTable
-                points.push <FormGroup key={count} validationState={@getValidationState(id)}>
-                    <ControlLabel>Rank #{id + 1}</ControlLabel>
+            for rank, score of @state.pointsTable
+                rank = Number(rank)
+                displayRank = rank + 1
+
+                points.push <FormGroup key={count} validationState={@getValidationState(rank)}>
+                    <ControlLabel>Rank #{displayRank}</ControlLabel>
                     <InputGroup>
                         <FormControl
                             type="text"
-                            value={rank}
-                            placeholder={"Rank #" + (id + 1)}
-                            onChange={@handleChange(id)}
+                            value={score}
+                            placeholder={"Rank #" + displayRank}
+                            onChange={@handleChange(rank)}
                         />
                         <InputGroup.Button>
-                            <Button onClick={@delete(id)}>
+                            <Button onClick={@delete(rank)}>
                                 <i className="fa fa-trash" style={{color: "red"}}></i>
                             </Button>
                         </InputGroup.Button>
