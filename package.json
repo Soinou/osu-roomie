@@ -20,11 +20,14 @@
   "author": "Abricot Soinou <abricot.soinou@gmail.com>",
   "license": "MIT",
   "dependencies": {
+    "async": "^2.0.1",
+    "axios": "^0.13.1",
     "bower": "^1.7.9",
     "browserify": "^13.1.0",
     "coffee-react": "^5.0.0",
     "coffee-reactify": "^5.0.0",
     "coffee-script": "^1.10.0",
+    "collections": "^5.0.4",
     "compression": "^1.6.2",
     "express": "^4.14.0",
     "gulp": "github:gulpjs/gulp#347ed5a731fe4b479d72c35d38503680621c316a",
@@ -42,6 +45,7 @@
     "react-dom": "^15.3.0",
     "react-router": "^2.6.1",
     "react-router-bootstrap": "^0.23.1",
+    "request": "^2.74.0",
     "vinyl-buffer": "^1.0.0",
     "vinyl-source-stream": "^1.1.0",
     "watchify": "^3.7.0"

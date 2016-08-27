@@ -4,9 +4,29 @@ storage = window.localStorage
 # A store
 module.exports = class Store
 
-    get: (key) ->
-        value = storage.getItem key
-        return value && JSON.parse value
+    version: 1
 
-    set: (key, value) ->
-        storage.setItem key, JSON.stringify value
+    constructor: (@name) ->
+        @name = "roomie." + @name
+
+        @store = @rawGet()
+
+        # Invalid version, reset data
+        if not @store? or not @store["version"]? or @store["version"] isnt @version
+            @store =
+                version: @version
+                data: null
+            @save()
+
+    rawGet: ->
+        value = storage.getItem @name
+        return value and JSON.parse value
+
+    get: -> @store.data
+
+    set: (value) ->
+        @store.data = value
+        @save()
+
+    save: ->
+        storage.setItem @name, JSON.stringify @store

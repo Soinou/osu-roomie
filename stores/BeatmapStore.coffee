@@ -7,75 +7,104 @@ class BeatmapStore extends Store
 
     # Constructor
     constructor: ->
-        @beatmaps = @get("roomie.beatmaps") or []
-        @adds = {}
+        super "beatmaps"
+        @beatmaps = @get() or []
+        @adds = []
         @refreshes = {}
 
-    rawAdd: (id) ->
-        # Get the already (maybe) existing promise
-        promise = @adds[id]
+    rawAdd: (id, mode, callback) ->
+        callbacks = @adds.find (add) ->
+            return add.is is id and add.mode is mode
 
-        # If we have one, then return it
-        if promise? then return promise
+        if callbacks? then return callbacks.list.push callback
 
-        # Else, create a new one and store it
-        @adds[id] = promise = Api.getBeatmap(id).then (data) =>
-            beatmap =
-                id: id
-                data: data
-            @beatmaps.push beatmap
-            delete @adds[id]
-            @set "roomie.beatmaps", @beatmaps
-            return beatmap
+        callbacks =
+            id: id
+            mode: mode
+            list: [callback]
 
-        return promise
+        index = @adds.push callbacks
+
+        # Get the beatmap data
+        Api.getBeatmap id, mode, (error, data) =>
+            # Beatmap is null for now
+            beatmap = null
+
+            # If we don't have an error
+            if not error?
+                # Create and store a new beatmap
+                beatmap =
+                    id: id
+                    data: data
+                @beatmaps.push beatmap
+                @set @beatmaps
+
+            # Process callbacks
+            for callback in callbacks.list
+                callback error, beatmap
+
+            # Delete callback array
+            @adds.slice index - 1, 1
 
     # Add a new beatmap
-    add: (id) ->
-        beatmap = @find id
-        if beatmap? then throw new Error "Beatmap already exists"
-        return @rawAdd id
+    add: (id, mode, callback) ->
+        if @find(id, mode)?
+            callback new Error "Beatmap already exists"
+        else
+            @rawAdd id, mode, callback
 
     # Get a specific user
-    find: (id) ->
-        return @beatmaps.find (beatmap) -> beatmap.id is id
+    find: (id, mode) ->
+        for beatmap in @beatmaps
+            if beatmap.id is id and beatmap.data.mode is mode
+                return beatmap
+        return null
 
     # Find or add a beatmap
-    findOrAdd: (id) ->
-        beatmap = @find id
+    findOrAdd: (id, mode, callback) ->
+        beatmap = @find id, mode
         if beatmap?
-            return Promise.resolve beatmap
+            callback null, beatmap
         else
-            return @rawAdd id
+            @rawAdd id, mode, callback
 
     # Get all the beatmaps
     all: -> return @beatmaps
 
     # Refreshes a beatmap data
-    refresh: (id) ->
+    refresh: (id, mode, callback) ->
         # Find the beatmap
-        beatmap = @find id
+        beatmap = @find id, mode
 
         # No beatmap, throw an error
         if not beatmap?
             throw new Error "Beatmap doesn't exist"
 
-        # Check if we already are refreshing this beatmap
-        promise = @refreshes[id]
+        # Check if we are already refreshing
+        if @refreshes[id]? then return @refreshes[id].push callback
 
-        # If we are, return the refreshing promise
-        if promise? then return promise
+        # Create a new callback array
+        @refreshes[id] = [callback]
 
-        # Else, store the refreshing promise
-        @refreshes[id] = Api.getBeatmap(id).then (data) =>
-            beatmap.data = data
+        # Get the beatmap data
+        Api.getBeatmap id, mode, (error, data) =>
+            # No error, update the beatmap
+            if not error?
+                beatmap.data = data
+                @set @beatmaps
+
+            # Process the callbacks
+            for callback in @refreshes[id]
+                callback error, beatmap
+
+            # Delete the callback array
             delete @refreshes[id]
-            @set "roomie.beatmaps", @beatmaps
 
-    # Deletes an user
-    delete: (id) ->
-        @beatmaps = @beatmaps.filter (beatmap) -> beatmap.id isnt id
-        @set "roomie.beatmaps", @beatmaps
+    # Deletes a beatmap
+    delete: (id, mode) ->
+        @beatmaps = @beatmaps.filter (beatmap) ->
+            beatmap.id isnt id and beatmap.mode isnt mode
+        @set @beatmaps
 
 # Exports
 module.exports = new BeatmapStore

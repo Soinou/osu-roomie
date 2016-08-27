@@ -14,7 +14,7 @@ var watchify = require("watchify");
 var Bower = {
     css: [
         "bower_components/bootstrap/dist/css/bootstrap.css",
-        "bower_components/bootswatch/paper/bootstrap.css",
+        "bower_components/bootswatch/cosmo/bootstrap.css",
         "bower_components/font-awesome/css/font-awesome.css"
     ],
     js: [

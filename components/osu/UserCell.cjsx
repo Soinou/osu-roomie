@@ -9,16 +9,19 @@ module.exports = React.createClass
         error: null
 
     componentWillMount: ->
-        Users.findOrAdd @props.id
-        .then (user) =>
-            @setState user: user
-        .catch (error) =>
-            @setState error: error.toString()
+        Users.findOrAdd @props.id, (error, user) =>
+            @setState
+                user: user
+                error: error
 
     render: ->
         if not @state.user?
-            <th>...</th>
+            <th><i className="fa fa-circle-o-notch fa-spin"></i></th>
         else if @state.error?
-            <th>{@state.error}</th>
+            <th>Error: {@state.error.toString()}</th>
         else
-            <th>{@state.user.data.username}</th>
+            <th>
+                <a href={"https://osu.ppy.sh/u/" + @state.user.id} target="_blank">
+                    {@state.user.data.username}
+                </a>
+            </th>

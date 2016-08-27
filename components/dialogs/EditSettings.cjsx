@@ -16,7 +16,7 @@ module.exports = React.createClass
         if @state.apiKey isnt "" then "success"
 
     componentWillMount: ->
-        @setState apiKey: Settings.getApiKey()
+        @setState apiKey: Settings.getApiKey() or ""
 
     # Render the dialog
     render: ->

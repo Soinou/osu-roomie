@@ -7,39 +7,62 @@ class RoomStore extends Store
 
     # Constructor
     constructor: ->
-        @rooms = @get("roomie.rooms") or []
+        super "rooms"
+        @rooms = @get() or []
         @adds = {}
         @refreshes = {}
 
     # Add a new room
-    add: (id) ->
-        if @find(id)? then throw new Error "Room already exists"
+    add: (id, callback) ->
 
-        promise = @adds[id]
+        # Already exists, send back the error
+        if @find(id)? then return callback new Error "Room already exists"
 
-        if promise? then return promise
+        # If we already have something adding
+        if @adds[id]?
+            # Just add this callback
+            return @adds[id].push callback
 
-        @adds[id] = promise = Api.getRoom(id).then (data) =>
+        # We don't have anything so we create a new array of callbacks
+        @adds[id] = [callback]
 
-            # Whitelist all the beatmaps
-            blacklist = {}
-            for game in data.games
-                blacklist[game.game_id] = false
+        # Get the room
+        Api.getRoom id, (error, data) =>
+            # Room is null for now
+            room = null
 
-            room =
-                id: id
-                data: data
-                blacklist: blacklist
-                points: {}
+            # If we don't have any error
+            if not error?
+                # Whitelist all the beatmaps
+                blacklist = {}
+                for game in data.games
+                    blacklist[game.game_id] = false
 
-            @rooms.push room
-            @set "roomie.rooms", @rooms
-            return room
+                # Create a new room
+                room =
+                    id: id
+                    data: data
+                    blacklist: blacklist
+                    settings:
+                        pointsTable: []
 
-        return promise
+                # Store it
+                @rooms.push room
+                @set @rooms
+
+            # Process all the callbacks
+            for callback in @adds[id]
+                callback error, room
+
+            # Delete our callback array
+            delete @adds[id]
 
     # Get a specific room
-    find: (id) -> return @rooms.find (room) -> room.id is id
+    find: (id) ->
+        for room in @rooms
+            if room.id is id
+                return room
+        return null
 
     # Get all the rooms
     all: -> return @rooms
@@ -50,40 +73,51 @@ class RoomStore extends Store
 
         if room?
             room.blacklist[beatmap_id] = state
-            @set "roomie.rooms", @rooms
+            @set @rooms
 
         return room
 
-    # Updates the points of an user
-    updatePoints: (id, user_id, points) ->
+    updatePointsTable: (id, table) ->
         room = @find id
 
         if room?
-            room.points[user_id] = points
-            @set "roomie.rooms", @rooms
+            room.settings.pointsTable = table
+            @set @rooms
 
         return room
 
     # Refreshes a room data
-    refresh: (id) ->
-        room = @find(id)
-        if not room? then throw new Error "Room doesn't exist"
+    refresh: (id, callback) ->
+        # Get the room
+        room = @find id
 
-        promise = @refreshes[id]
+        # No room
+        if not room? then callback new Error "Room doesn't exist"
 
-        if promise? then return promise
+        # Already refreshing, store the callback
+        if @refreshes[id]? then return @refreshes[id].push callback
 
-        @refreshes[id] = promise = Api.getRoom(id).then (data) =>
-            room.data = data
-            @set "roomie.rooms", @rooms
-            return room
+        # Store the callback in a new array of callbacks
+        @refreshes[id] = [callback]
 
-        return promise
+        # Get the room data
+        Api.getRoom id, (error, data) =>
+            # No error, update the room
+            if not error?
+                room.data = data
+                @set @rooms
+
+            # Process all the callbacks
+            for callback in @refreshes[id]
+                callback error, room
+
+            # Delete the callback array
+            delete @refreshes[id]
 
     # Deletes a room
     delete: (id) ->
         @rooms = @rooms.filter (room) -> room.id isnt id
-        @set "roomie.rooms", @rooms
+        @set @rooms
 
 # Exports
 module.exports = new RoomStore

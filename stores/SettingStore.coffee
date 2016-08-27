@@ -3,13 +3,18 @@ Store = require "./Store"
 # Setting store
 class SettingStore extends Store
 
+    constructor: ->
+        super "settings"
+        @settings = @get() or {apiKey: ""}
+
     # Set api key
     setApiKey: (apiKey) ->
-        @set "roomie.apiKey", apiKey
+        @settings["apiKey"] = apiKey
+        @set @settings
 
     # Get api key
     getApiKey: ->
-        return @get "roomie.apiKey"
+        return @settings["apiKey"]
 
 # Exports
 module.exports = new SettingStore

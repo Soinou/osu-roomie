@@ -2,80 +2,68 @@ Store = require "./Store"
 
 Api = require "../services/ApiService"
 
-# User store
+# User store (Same thing as the beatmap store)
 class UserStore extends Store
 
-    # Constructor
     constructor: ->
-        @users = @get("roomie.users") or []
+        super "users"
+        @users = @get() or []
         @adds = {}
         @refreshes = {}
 
-    rawAdd: (id) ->
-        # Get the already (maybe) existing promise
-        promise = @adds[id]
-
-        # If we have one, then return it
-        if promise? then return promise
-
-        # Else, create a new one and store it
-        @adds[id] = promise = Api.getUser(id).then (data) =>
-            user =
-                id: id
-                data: data
-            @users.push user
+    rawAdd: (id, callback) ->
+        if @adds[id]? then return @adds[id].push callback
+        @adds[id] = [callback]
+        Api.getUser id, (error, data) =>
+            user = null
+            if not error?
+                user =
+                    id: id
+                    data: data
+                @users.push user
+                @set @users
+            for callback in @adds[id]
+                callback error, user
             delete @adds[id]
-            @set "roomie.users", @users
-            return user
 
-        return promise
+    add: (id, callback) ->
+        if @find(id)?
+            callback new Error "User already exists"
+        else
+            @rawAdd id, callback
 
-    # Add a new user
-    add: (id) ->
-        user = @find id
-        if user? then throw new Error "User already exists"
-        return @rawAdd id
-
-    # Get a specific user
     find: (id) ->
-        return @users.find (user) -> user.id is id
+        for user in @users
+            if user.id is id
+                return user
+        return null
 
-    # Find or add a user
-    findOrAdd: (id) ->
+    findOrAdd: (id, callback) ->
         user = @find id
         if user?
-            return Promise.resolve user
+            callback null, user
         else
-            return @rawAdd id
+            @rawAdd id, callback
 
-    # Get all the users
     all: -> return @users
 
-    # Refreshes a user data
-    refresh: (id) ->
-        # Find the user
+    refresh: (id, callback) ->
         user = @find id
-
-        # No user, throw an error
         if not user?
-            throw new Error "User doesn't exist"
-
-        # Check if we already are refreshing this user
-        promise = @refreshes[id]
-
-        # If we are, return the refreshing promise
-        if promise? then return promise
-
-        # Else, store the refreshing promise
-        @refreshes[id] = Api.getUser(id).then (data) =>
-            user.data = data
+            callback new Error "User doesn't exist"
+        if @refreshes[id]? then return @refreshes[id].push callback
+        @refreshes[id] = [callback]
+        Api.getUser id, (error, data) =>
+            if not error?
+                user.data = data
+                @set @users
+            for callback in @refreshes[id]
+                callback error, user
             delete @refreshes[id]
-            @set "roomie.users", @users
 
-    # Deletes an user
     delete: (id) ->
         @users = @users.filter (user) -> user.id isnt id
-        @set "roomie.users", @users
+        @set @users
 
 # Exports
 module.exports = new UserStore

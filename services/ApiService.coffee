@@ -1,55 +1,54 @@
-fetch = require "isomorphic-fetch"
+{get} = require "http"
 
 Settings = require "../stores/SettingStore"
 
 class ApiService
 
-    _fetch: (path, params) ->
-        key = Settings.getApiKey()
-
-        if not key? or key is ""
-            throw new Error "Api key is invalid"
+    _fetch: (path, params, callback) ->
+        key = Settings.getApiKey() or ""
 
         url = "https://osu.ppy.sh/api/" + path + "?k=" + key
 
         for key, value of params
             url += "&" + key + "=" + value
 
-        return fetch url
-        .then (response) ->
-            if response.status isnt 200
-                throw new Error "Could not get data from osu!api. Check your osu!api key"
-            else
-                return response.json()
+        request = get url, (res) ->
+            data = ""
+            res.setEncoding "utf8"
+            res.on "data", (chunk) -> data += chunk
+            res.on "end", () -> callback null, JSON.parse data
 
-    getBeatmap: (id) ->
-        @_fetch "get_beatmaps",
-            b: id
-            m: 0
-        .then (data) ->
-            if data.length is 0
-                throw new Error "Beatmap does not exist."
+        request.on "error", (error) ->
+            if error.message is "Failed to fetch"
+                callback new Error "Invalid API key, please provide a valid one"
             else
-                return data[0]
+                callback error
 
-    getUser: (id) ->
-        @_fetch "get_user",
-            u: id
-            m: 0
-            type: "id"
-        .then (data) ->
-            if data.length is 0
-                throw new Error "Beatmap does not exist."
+    getBeatmap: (id, mode, callback) ->
+        @_fetch "get_beatmaps", {b:id, m:mode}, (error, json) ->
+            if error?
+                callback error
+            else if json.length is 0
+                callback new Error "Beatmap doesn't exist"
             else
-                return data[0]
+                callback null, json[0]
 
-    getRoom: (id) ->
-        @_fetch "get_match",
-            mp: id
-        .then (data) ->
-            if data.match is 0
-                throw new Error "Match doesn't exist"
+    getUser: (id, callback) ->
+        @_fetch "get_user", {u: id, m: 0, type: "id"}, (error, json) ->
+            if error?
+                callback error
+            else if json.length is 0
+                callback new Error "User does not exist"
             else
-                return data
+                callback null, json[0]
+
+    getRoom: (id, callback) ->
+        @_fetch "get_match", {mp: id}, (error, json) =>
+            if error?
+                callback error
+            else if json.match is 0
+                callback new Error "Match doesn't exist"
+            else
+                callback null, json
 
 module.exports = new ApiService

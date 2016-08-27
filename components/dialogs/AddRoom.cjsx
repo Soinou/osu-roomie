@@ -10,11 +10,13 @@ urlPattern = /^https?:\/\/osu.ppy.sh\/mp\/(\d+)$/
 module.exports = React.createClass
 
     # Initial state (Empty URL)
-    getInitialState: -> url: "", error: null
+    getInitialState: ->
+        waiting: false
+        url: ""
+        error: null
 
     # Validation state
     getValidationState: ->
-
         if @state.error?
             "error"
         # Test the url against the mp link pattern
@@ -27,6 +29,15 @@ module.exports = React.createClass
             @state.error.toString()
         else
             "Example url: https://osu.ppy.sh/mp/133742"
+
+    addButton: ->
+
+        if @state.waiting
+            <Button disabled bsStyle="primary">
+                <i className="fa fa-circle-o-notch fa-spin"></i>
+            </Button>
+        else
+            <Button type="submit" bsStyle="primary">Add</Button>
 
     # Renders the dialog
     render: ->
@@ -50,7 +61,7 @@ module.exports = React.createClass
                 </Modal.Body>
                 <Modal.Footer>
                     <Button onClick={@handleHide}>Close</Button>
-                    <Button type="submit" bsStyle="primary">Add</Button>
+                    {@addButton()}
                 </Modal.Footer>
             </form>
         </Modal>
@@ -66,12 +77,13 @@ module.exports = React.createClass
         match = urlPattern.exec @state.url
         if match?
             id = match[1]
-            Rooms.add id, @state.url
-            .then () =>
-                @setState url: ""
-                @props.onHide()
-            .catch (error) =>
-                @setState error: error
+            @setState waiting: true
+            Rooms.add id, (error, room) =>
+                if error?
+                    @setState waiting: false, error: error
+                else
+                    @setState waiting: false, url: ""
+                    @props.onHide()
 
     # Called when the url input has changed
     handleChange: (e) ->
