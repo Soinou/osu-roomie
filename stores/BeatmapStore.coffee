@@ -12,18 +12,23 @@ class BeatmapStore extends Store
         @adds = []
         @refreshes = {}
 
+    getAdd: (id, mode) ->
+        for add in @adds
+            if add.id is id and add.mode is mode
+                return add
+        return null
+
     rawAdd: (id, mode, callback) ->
-        callbacks = @adds.find (add) ->
-            return add.is is id and add.mode is mode
+        add = @getAdd id, mode
 
-        if callbacks? then return callbacks.list.push callback
+        if add? then return add.list.push callback
 
-        callbacks =
+        add =
             id: id
             mode: mode
             list: [callback]
 
-        index = @adds.push callbacks
+        index = @adds.push add
 
         # Get the beatmap data
         Api.getBeatmap id, mode, (error, data) =>
@@ -40,7 +45,7 @@ class BeatmapStore extends Store
                 @set @beatmaps
 
             # Process callbacks
-            for callback in callbacks.list
+            for callback in add.list
                 callback error, beatmap
 
             # Delete callback array
