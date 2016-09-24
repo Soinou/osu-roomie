@@ -66,6 +66,7 @@ module.exports = React.createClass
     renderMods: ->
         items = []
         count = 0
+
         mods = Mods.get_mods @props.game.mods
 
         style =

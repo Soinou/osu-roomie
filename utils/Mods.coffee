@@ -43,9 +43,9 @@ class Mods
     get_mods: (mods) ->
         mod_list = []
 
-        for mod in @mods_.keys()
-            if (mods & mod) == mod
-                mod_list.push @mods_.get mod
+        @mods_.forEach (value, key) ->
+            if (mods & key) == key
+                mod_list.push value
 
         # Hard coded because this is dumb
         if (mods & 512) == 512 then mod_list.push {id: "nightcore", name: "Night Core"}
