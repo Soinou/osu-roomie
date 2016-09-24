@@ -26,42 +26,47 @@ module.exports = React.createClass
         @isUnmounted = true
 
     renderScores: ->
-        headers = []
-        columns = []
-        count = 0
+        if @props.game.end_time is null
+            <div className="panel-body">
+                <p>In progress, please wait a bit and refresh</p>
+            </div>
+        else
+            headers = []
+            columns = []
+            count = 0
 
-        scores = @props.game.scores.sort (left, right) ->
-            # Left passed, right failed, left is better
-            if left.pass is "1" and right.pass is "0"
-                return -1
-            # Left failed, right passed, right is better
-            else if left.pass is "0" and right.pass is "1"
-                return 1
-            # Else, the two passed or the two failed, use the score
-            else
-                return right.score - left.score
+            scores = @props.game.scores.sort (left, right) ->
+                # Left passed, right failed, left is better
+                if left.pass is "1" and right.pass is "0"
+                    return -1
+                # Left failed, right passed, right is better
+                else if left.pass is "0" and right.pass is "1"
+                    return 1
+                # Else, the two passed or the two failed, use the score
+                else
+                    return right.score - left.score
 
-        for score in scores
-            if score.pass is "0"
-                score_cell = <span className="text-danger">{score.score}</span>
-            else
-                score_cell = score.score
-            headers.push <UserCell key={count} id={score.user_id} />
-            columns.push <td key={count}>{score_cell}</td>
-            count++
+            for score in scores
+                if score.pass is "0"
+                    score_cell = <span className="text-danger">{score.score}</span>
+                else
+                    score_cell = score.score
+                headers.push <UserCell key={count} id={score.user_id} />
+                columns.push <td key={count}>{score_cell}</td>
+                count++
 
-        <Table responsive bordered striped>
-            <thead>
-                <tr>
-                    {headers}
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    {columns}
-                </tr>
-            </tbody>
-        </Table>
+            <Table responsive bordered striped>
+                <thead>
+                    <tr>
+                        {headers}
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        {columns}
+                    </tr>
+                </tbody>
+            </Table>
 
     renderMods: ->
         items = []
@@ -108,7 +113,10 @@ module.exports = React.createClass
             start = moment game.start_time
             end = moment game.end_time
 
-            duration = moment.utc(end.diff(start)).format "HH:mm:ss"
+            if start.isValid() and end.isValid()
+                duration = moment.utc(end.diff(start)).format "HH:mm:ss"
+            else
+                duration = "In progress"
 
             beatmap = @state.beatmap.data
 
